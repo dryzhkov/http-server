@@ -7,9 +7,10 @@ import (
 )
 
 const (
-	connHost = "localhost"
-	connPort = "5555"
-	connType = "tcp"
+	connHost  = "localhost"
+	connPort  = "5555"
+	connType  = "tcp"
+	maxMsgLen = 4096
 )
 
 func main() {
@@ -22,6 +23,12 @@ func main() {
 
 	// send a message and close the connection
 	conn.Write([]byte("New message from client\n"))
+	// read response from server
+	buf := make([]byte, maxMsgLen)
+	reqLen, err := conn.Read(buf)
 	conn.Close()
-	fmt.Println("Message sent")
+	if err != nil {
+		fmt.Println("Error reading:", err.Error())
+	}
+	fmt.Printf("Message sent. Server response below. Bytes: %d \n=============\n%s\n", reqLen, buf)
 }
